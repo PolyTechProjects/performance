@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 data class Message(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    val id: Long = -1,
 
     @Column(name="chat_id")
     val chatId: Long,

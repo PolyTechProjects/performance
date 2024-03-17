@@ -13,7 +13,7 @@ import jakarta.persistence.EnumType
 data class Chat(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+    val id: Long = -1,
 
     var name: String?,
 
@@ -21,6 +21,3 @@ data class Chat(
     var type: ChatType
 )
 
-enum class ChatType {
-    PERSONAL, GROUP
-}
