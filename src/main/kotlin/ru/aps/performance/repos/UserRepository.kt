@@ -1,10 +1,8 @@
 package ru.aps.performance.repos
 
-import org.springframework.stereotype.Repository
-import org.springframework.data.repository.CrudRepository
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.geo.Point
-
+import org.springframework.data.repository.CrudRepository
+import org.springframework.stereotype.Repository
 import ru.aps.performance.models.User
 
 @Repository
