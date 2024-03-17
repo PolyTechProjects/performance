@@ -14,18 +14,21 @@ class WebSocketConfiguration(
     private val host: String
 ): WebSocketMessageBrokerConfigurer {
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
-        config.enableStompBrokerRelay("/topic")
+        /*config.enableStompBrokerRelay("/queue")
             .setRelayHost(host)
             .setRelayPort(61613)
             .setClientLogin("guest")
             .setClientPasscode("guest")
             .setSystemLogin("guest")
-            .setSystemPasscode("guest")
+            .setSystemPasscode("guest")*/
+        config.enableSimpleBroker("/queue")
         config.setApplicationDestinationPrefixes("/chat")
         config.setUserDestinationPrefix("/user")
     }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-        registry.addEndpoint("/chat").setAllowedOrigins("*").withSockJS()
+        registry.addEndpoint("/websockets")
+            .setAllowedOrigins("*")
+            .withSockJS()
     }
 }
