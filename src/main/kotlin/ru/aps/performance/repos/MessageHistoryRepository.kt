@@ -12,5 +12,11 @@ interface MessageHistoryRepository: CrudRepository<MessageHistory, Long> {
         value = "select * from messagehistory where chat_room_id=:chatRoomId",
         nativeQuery=true
     )
-    fun findByChatRoomId(chatRoomId: String): MessageHistory
+    fun findByChatRoomId(chatRoomId: String): MessageHistory?
+
+    @Query(
+        value = "update messagehistory set history=:history where uid=:uid",
+        nativeQuery=true
+    )
+    fun updateHistoryById(uid: Long, history: String)
 }
