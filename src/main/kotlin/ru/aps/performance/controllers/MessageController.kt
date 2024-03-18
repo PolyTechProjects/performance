@@ -20,7 +20,7 @@ class MessageController(
 
     @MessageMapping("/send")
     fun sendMessage(messageRequest: MessageRequest) {
-        val message = Message(messageRequest.chatRoomId, messageRequest.senderId, messageRequest.body)
+        val message = Message(messageRequest.chatRoomId, messageRequest.senderId, messageRequest.body, messageRequest.sendTime)
         messageService.sendMessage(message)
     }
 }

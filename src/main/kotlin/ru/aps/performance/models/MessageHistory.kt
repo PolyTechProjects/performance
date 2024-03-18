@@ -16,5 +16,5 @@ data class MessageHistory(
     @Column(unique=true)
     val chatRoomId: String,
     
-    var history: String
+    val history: String
 )

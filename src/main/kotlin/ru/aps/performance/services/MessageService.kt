@@ -14,6 +14,7 @@ import java.lang.StringBuilder
 import ru.aps.performance.models.Message
 import ru.aps.performance.repos.MessageHistoryRepository
 import ru.aps.performance.repos.ChatRoomRepository
+import ru.aps.performance.exceptions.NoSuchChatRoomException
 
 @Service
 class MessageService(
@@ -25,8 +26,8 @@ class MessageService(
 ) {
     fun subscribeToQueue(chatRoomId: String) {
         if (chatRoomRepository.findById(chatRoomId).isEmpty) {
-            //throw exception on 400
             logger.warn("WARN: subscribing to queue with non existing chatRoom = ${chatRoomId}")
+            throw NoSuchChatRoomException("No chat room with id ${chatRoomId} to subscribe on queue")
         }
         val queueName = "/queue/$chatRoomId"
         val queue = Queue(queueName)
@@ -55,10 +56,12 @@ class MessageService(
 
     private fun saveMessage(message: Message) {
         val messageHistory = messageHistoryRepository.findByChatRoomId(message.chatRoomId)
+        if (messageHistory == null) {
+            throw NoSuchChatRoomException("No chat room with id ${message.chatRoomId} in messagehistory")
+        }
         val history = messageHistory.history
         val newHistory = StringBuilder(history).append(message.toString()).toString()
-        messageHistory.history = newHistory
-        messageHistoryRepository.save(messageHistory)
+        messageHistoryRepository.updateHistoryById(messageHistory.uid, newHistory)
     }
 
     companion object {
