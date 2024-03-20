@@ -14,14 +14,13 @@ class WebSocketConfiguration(
     private val host: String
 ): WebSocketMessageBrokerConfigurer {
     override fun configureMessageBroker(config: MessageBrokerRegistry) {
-        /*config.enableStompBrokerRelay("/queue")
+        config.enableStompBrokerRelay("/queue", "/exchange")
             .setRelayHost(host)
             .setRelayPort(61613)
             .setClientLogin("guest")
             .setClientPasscode("guest")
             .setSystemLogin("guest")
-            .setSystemPasscode("guest")*/
-        config.enableSimpleBroker("/queue")
+            .setSystemPasscode("guest")
         config.setApplicationDestinationPrefixes("/chat")
         config.setUserDestinationPrefix("/user")
     }
