@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import ru.aps.performance.exceptions.NoSuchChatRoomException
 import ru.aps.performance.exceptions.NoSuchUserInChatRoomException
+import ru.aps.performance.exceptions.NotEnoughParticipantsException
 
 @ControllerAdvice
 class BaseController() {
@@ -16,6 +17,11 @@ class BaseController() {
 
     @ExceptionHandler(NoSuchUserInChatRoomException::class)
     fun noSuchUserInChatRoomExceptionHandler(ex: NoSuchUserInChatRoomException): ResponseEntity<String> {
+        return ResponseEntity(ex.message, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(NotEnoughParticipantsException::class)
+    fun notEnoughParticipantsExceptionHandler(ex: NotEnoughParticipantsException): ResponseEntity<String> {
         return ResponseEntity(ex.message, HttpStatus.BAD_REQUEST)
     }
 }

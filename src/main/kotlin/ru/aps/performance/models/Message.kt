@@ -2,10 +2,10 @@ package ru.aps.performance.models
 
 import java.sql.Timestamp
 import java.util.UUID
-import org.springframework.data.annotation.Id
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
+import jakarta.persistence.Id
 
 @Entity
 @Table(name="messages")

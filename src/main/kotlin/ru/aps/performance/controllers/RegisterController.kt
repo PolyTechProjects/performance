@@ -14,7 +14,7 @@ import java.util.UUID
 class RegisterController(private val registerService: RegisterService) {
     @PostMapping("/register")
     fun registerUser(@RequestBody registerRequest: RegisterRequest) {
-        val user = User(UUID.randomUUID().toString(), registerRequest.name, registerRequest.password, 0.0, 0.0)
+        val user = User(UUID.randomUUID(), registerRequest.name, registerRequest.password)
         registerService.registerUser(user)
     }
 }

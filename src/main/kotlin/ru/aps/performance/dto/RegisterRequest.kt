@@ -1,6 +1,6 @@
 package ru.aps.performance.dto
 
-data class RegisterRequest(
+class RegisterRequest(
     val name: String,
     val password: String
 )
