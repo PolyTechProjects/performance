@@ -1,12 +1,22 @@
 package ru.aps.performance.models
 
 import java.sql.Timestamp
+import java.util.UUID
+import org.springframework.data.annotation.Id
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
 
-data class Message(
-    val chatRoomId: String,
-    val senderId: String,
-    val body: String,
-    val sendTime: Timestamp
+@Entity
+@Table(name="messages")
+open class Message(
+    @Id
+    @GeneratedValue
+    open var id: Long? = null,
+    open var chatRoomId: UUID,
+    open var senderId: UUID,
+    open var body: String,
+    open var sendTime: Timestamp
 ) {
     override fun toString(): String {
         val result = StringBuilder()
