@@ -15,5 +15,5 @@ interface UserXChatRoomRepository: CrudRepository<UserXChatRoom, Long> {
     @Transactional
     @Modifying
     @Query(value="DELETE FROM user_and_chat_room WHERE chat_room_id=:chatRoomId",nativeQuery=true)
-    fun deleteAllByChatRoomId(chatRoomId: UUID): List<UserXChatRoom>
+    fun deleteAllByChatRoomId(chatRoomId: UUID)
 }

@@ -10,8 +10,7 @@ import java.util.UUID
 @Table(name = "chat_rooms")
 open class ChatRoom(
     @Id
-    @GeneratedValue
-    open var uid: UUID? = UUID.randomUUID(),
+    open var uid: UUID,
 
     open var name: String? = null
 )

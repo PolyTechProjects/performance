@@ -14,12 +14,13 @@ class ChatRoomService(
     private val chatRoomRepository: ChatRoomRepository,
     private val userXChatRoomRepository: UserXChatRoomRepository
 ) {
-    fun addChatRoom(firstId: UUID, secondId: UUID, name: String?) {
+    fun addChatRoom(firstId: UUID, secondId: UUID, name: String?): UUID {
         val chatRoomId = UUID.randomUUID()
         val chatRoom = ChatRoom(chatRoomId, name)
         chatRoomRepository.save(chatRoom)
         userXChatRoomRepository.save(UserXChatRoom(userId=firstId, chatRoomId=chatRoomId))
         userXChatRoomRepository.save(UserXChatRoom(userId=secondId, chatRoomId=chatRoomId))
+        return chatRoomId
     }
 
     fun deleteChatRoom(chatRoomId: UUID, userId: UUID) {
@@ -43,6 +44,6 @@ class ChatRoomService(
 
     fun isUserInChatRoom(chatRoomId: UUID, userId: UUID): Boolean {
         val usersInChatRoom = userXChatRoomRepository.findAllByChatRoomId(chatRoomId).map { it.userId };
-        return !usersInChatRoom.contains(userId);
+        return usersInChatRoom.contains(userId);
     }
 }

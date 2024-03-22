@@ -13,8 +13,8 @@ import java.util.UUID
 @RestController
 class RegisterController(private val registerService: RegisterService) {
     @PostMapping("/register")
-    fun registerUser(@RequestBody registerRequest: RegisterRequest) {
-        val user = User(UUID.randomUUID(), registerRequest.name, registerRequest.password)
-        registerService.registerUser(user)
+    fun registerUser(@RequestBody registerRequest: RegisterRequest): String {
+        val userId = registerService.registerUser(registerRequest.name, registerRequest.password)
+        return userId.toString()
     }
 }

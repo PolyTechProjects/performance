@@ -33,7 +33,7 @@ class MessageService(
     }
 
     fun getMessageHistory(receiverId: UUID, chatRoomId: UUID): List<Message> {
-        if (chatRoomService.isUserInChatRoom(chatRoomId, receiverId)) {
+        if (!chatRoomService.isUserInChatRoom(chatRoomId, receiverId)) {
             throw NoSuchUserInChatRoomException("User ${receiverId} is not allowed to check history in ${chatRoomId}")
         }
         return messageRepository.findAllByChatRoomId(chatRoomId)
