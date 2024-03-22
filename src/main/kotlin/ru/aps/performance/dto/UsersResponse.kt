@@ -1,6 +1,6 @@
 package ru.aps.performance.dto
 
-data class UsersResponse(
+class UsersResponse(
     val uid: String,
     val name: String
 )

@@ -4,11 +4,13 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
+import java.util.UUID
 
 @Entity
-@Table(name = "chatrooms")
-data class ChatRoom(
+@Table(name = "chat_rooms")
+open class ChatRoom(
     @Id
-    @GeneratedValue
-    val uid: String
+    open var uid: UUID,
+
+    open var name: String? = null
 )
