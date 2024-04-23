@@ -28,7 +28,7 @@ class ChatRoomController(
         }
         val firstUserId = UUID.fromString(chatRoomRequest.firstUserId)
         val secondUserId = UUID.fromString(chatRoomRequest.secondUserId)
-        val chatRoomId = chatRoomService.addChatRoom(firstUserId, secondUserId, chatRoomRequest.name)
+        val chatRoomId = chatRoomService.addChatRoom(firstUserId, secondUserId)
         return chatRoomId.toString()
     }
 
@@ -47,6 +47,11 @@ class ChatRoomController(
         val _firstUserId = UUID.fromString(firstUserId)
         val _secondUserId = UUID.fromString(secondUserId)
         val chatRoom = chatRoomService.getChatRoom(_firstUserId, _secondUserId)
-        return ChatRoomResponse(chatRoom.uid.toString(), chatRoom.name)
+        return ChatRoomResponse(chatRoom.uid.toString())
+    }
+
+    @DeleteMapping("/all")
+    fun purgeAllChatRooms() {
+        chatRoomService.purgeAllChatRooms()
     }
 }
