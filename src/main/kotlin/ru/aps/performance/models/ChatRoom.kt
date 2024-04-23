@@ -12,5 +12,7 @@ open class ChatRoom(
     @Id
     open var uid: UUID,
 
+    open var firstUserId: UUID? = null,
+    open var secondUserId: UUID? = null,
     open var name: String? = null
 )
