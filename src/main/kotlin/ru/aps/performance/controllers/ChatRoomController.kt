@@ -43,10 +43,10 @@ class ChatRoomController(
     }
 
     @GetMapping
-    fun getChatRoom(@RequestParam chatRoomId: String, @RequestParam userId: String): ChatRoomResponse {
-        val _chatRoomId = UUID.fromString(chatRoomId)
-        val _userId = UUID.fromString(userId)
-        val chatRoom = chatRoomService.getChatRoom(_chatRoomId, _userId)
+    fun getChatRoom(@RequestParam firstUserId: String, @RequestParam secondUserId: String): ChatRoomResponse {
+        val _firstUserId = UUID.fromString(firstUserId)
+        val _secondUserId = UUID.fromString(secondUserId)
+        val chatRoom = chatRoomService.getChatRoom(_firstUserId, _secondUserId)
         return ChatRoomResponse(chatRoom.uid.toString(), chatRoom.name)
     }
 }
