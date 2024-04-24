@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service
 
 import ru.aps.performance.models.User
 import ru.aps.performance.repos.UserRepository
-import ru.aps.performance.exceptions.DuplicateUserException
 import java.util.UUID
 
 @Service
