@@ -10,7 +10,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - "master"
+      - "ci"
   pull_request:
     types:
       - opened
@@ -33,3 +35,21 @@ jobs:
     - name: Build with Maven
       run: mvn package -DskipTests
 
+  dockerize:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build docker image
+      run: |
+        docker build . --tag ghcr.io/kon1ch1wa/performance:latest
+
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Publish package
+      run: |
+        docker login --username kon1ch1wa --password ${{ secrets.TOKEN_PUBLISH_PACKAGE }}
+        docker push ghcr.io/kon1ch1wa/performance:latest
