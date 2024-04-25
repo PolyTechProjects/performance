@@ -21,7 +21,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -36,20 +35,20 @@ jobs:
       run: mvn package -DskipTests
 
   dockerize:
+    needs: build
+
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v3
+    - name: Login to Github Packages
+      run: |
+        echo ${{ secrets.TOKEN_PUBLISH_PACKAGE }} | docker login --username kon1ch1wa --password-stdin ghcr.io
     - uses: actions/checkout@v3
     - name: Build docker image
       run: |
         docker build . --tag ghcr.io/kon1ch1wa/performance:latest
-
-  publish:
-    runs-on: ubuntu-latest
-
-    steps:
     - uses: actions/checkout@v3
-    - name: Publish package
+    - name: Push to container registry in github
       run: |
-        docker login --username kon1ch1wa --password ${{ secrets.TOKEN_PUBLISH_PACKAGE }}
         docker push ghcr.io/kon1ch1wa/performance:latest
