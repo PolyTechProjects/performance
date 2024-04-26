@@ -78,3 +78,10 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ghcr.io/kon1ch1wa/performance:latest
+          
+      - name: Send the build to telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_RELEASES_CHANNEL }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: New Build is ready! (ghcr.io/kon1ch1wa/performance:latest) 
