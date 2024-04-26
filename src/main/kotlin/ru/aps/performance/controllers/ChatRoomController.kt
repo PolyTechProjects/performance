@@ -32,16 +32,6 @@ class ChatRoomController(
         return chatRoomId.toString()
     }
 
-    @DeleteMapping
-    fun deleteChatRoom(@RequestBody chatRoomRequest: ChatRoomRequest) {
-        if (chatRoomRequest.chatRoomId == null) {
-            throw NoSuchChatRoomException("Not valid chatRoomId")
-        }
-        val chatRoomId = UUID.fromString(chatRoomRequest.chatRoomId)
-        val firstUserId = UUID.fromString(chatRoomRequest.firstUserId)
-        chatRoomService.deleteChatRoom(chatRoomId, firstUserId)
-    }
-
     @GetMapping
     fun getChatRoom(@RequestParam firstUserId: String, @RequestParam secondUserId: String): ChatRoomResponse {
         val _firstUserId = UUID.fromString(firstUserId)
