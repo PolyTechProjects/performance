@@ -11,8 +11,8 @@ import java.util.UUID
 class UsersService(
     private val userRepository: UserRepository,
 ) {
-    fun findAllUsers(): List<User> {
-        return userRepository.findAll().toList()
+    fun findAllUsersExceptMe(userId: UUID): List<User> {
+        return userRepository.findAll().toList().filter { it.uid != userId }
     }
 
     fun findUserByCredentials(name: String, password: String): Optional<User> {
