@@ -11,7 +11,7 @@ name: Deploy
 on:
   pull_request:
     types:
-      - closed
+      - opened
     branches:
       - "master"
 
