@@ -52,7 +52,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.TOKEN_PUBLISH_PACKAGE }}
+          password: ${{ secrets.${{ github.actor }}_TOKEN }}
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

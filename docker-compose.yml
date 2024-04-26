@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    image: ghcr.io/kon1ch1wa/performance_${ARCH}:latest
+    image: ghcr.io/kon1ch1wa/performance:latest
     ports:
       - "8080:8080"
     depends_on:
