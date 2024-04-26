@@ -23,8 +23,8 @@ class ChatRoomController(
 ) {
     @PostMapping
     fun addChatRoom(@RequestBody chatRoomRequest: ChatRoomRequest): String {
-        if (chatRoomRequest.secondUserId == null) {
-            throw NotEnoughParticipantsException("Not enough participants to create a chat between")
+        if (chatRoomRequest.firstUserId == chatRoomRequest.secondUserId) {
+            throw NotEnoughParticipantsException("You cannot create a chatroom with yourself")
         }
         val firstUserId = UUID.fromString(chatRoomRequest.firstUserId)
         val secondUserId = UUID.fromString(chatRoomRequest.secondUserId)
