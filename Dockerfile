@@ -1,5 +1,10 @@
-FROM openjdk:latest as run
+FROM alpine:3.19.1
 
-COPY ./*SNAPSHOT.jar /usr/local/bin/performance.jar
+RUN apk update \
+    && apk add --no-cache openjdk17-jdk iptables iproute2 wireguard-tools
 
-ENTRYPOINT [ "java", "-jar", "/usr/local/bin/performance.jar" ]
+COPY wg0.conf /etc/wireguard/wg0.conf
+
+COPY ./target/*SNAPSHOT.jar /usr/local/bin/performance.jar
+
+ENTRYPOINT ["sh", "-c", "java -jar /usr/local/bin/performance.jar && wg-quick up wg0"]
