@@ -4,20 +4,22 @@ import ru.aps.performance.repos.UserRepository
 import ru.aps.performance.models.User
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Value
+import java.util.Optional
+import java.util.UUID
 
 @Service
 class UsersService(
     private val userRepository: UserRepository,
-    @Value("\${geo.radius}")
-    val radius: Int
 ) {
-
-    fun findAllUsers(): List<User> {
-        return userRepository.findAll().toList()
+    fun findAllUsersExceptMe(userId: UUID): List<User> {
+        return userRepository.findAll().toList().filter { it.uid != userId }
     }
 
-    fun findUsersByGeoposition(uid: String): List<User> {
-        val user = userRepository.findById(uid).get()
-        return userRepository.findUsersByGeoposition(user.latitude, user.longitude, radius)
+    fun findUserByCredentials(name: String, password: String): Optional<User> {
+        return userRepository.findUserByNameAndPassword(name, password)
+    }
+
+    fun purgeAllUsers() {
+        userRepository.deleteAll()
     }
 }

@@ -4,12 +4,15 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import ru.aps.performance.models.User
+import java.util.Optional
+import java.util.UUID
 
 @Repository
-interface UserRepository: CrudRepository<User, String> {
+interface UserRepository: CrudRepository<User, UUID> {
+
     @Query(
-        value = "select * from users where (point(users.longitude, users.latitude)<@>point(:longitude, :latitude)) * 1609.344 <= :radius",
-        nativeQuery = true
+        value = "SELECT * FROM users WHERE name = :name AND password = :password",
+        nativeQuery=true
     )
-    fun findUsersByGeoposition(latitude: Double, longitude: Double, radius: Int): List<User>
+    fun findUserByNameAndPassword(name: String, password: String): Optional<User>
 }

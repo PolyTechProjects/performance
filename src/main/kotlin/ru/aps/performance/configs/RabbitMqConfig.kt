@@ -6,7 +6,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory
-import org.springframework.amqp.core.DirectExchange
+import org.springframework.amqp.core.TopicExchange
 import org.apache.logging.log4j.LogManager
 
 @Configuration
@@ -23,25 +23,21 @@ class RabbitMqConfig() {
     }
 
     @Bean
-    fun rabbitAdmin(connectionFactory: ConnectionFactory): RabbitAdmin {
-        logger.info(connectionFactory.host)
-        logger.info(connectionFactory.port)
-        logger.info(connectionFactory.username)
-        logger.info(connectionFactory.virtualHost)
-        val rabbitAdmin = RabbitAdmin(connectionFactory)
-        rabbitAdmin.declareExchange(directExchange())
-        return rabbitAdmin
-    }
-
-    @Bean
     fun rabbitTemplate(connectionFactory: ConnectionFactory): RabbitTemplate {
         val rabbitTemplate = RabbitTemplate(connectionFactory)
         return rabbitTemplate
     }
 
     @Bean
-    fun directExchange(): DirectExchange {
-        return DirectExchange("performance-exchange")
+    fun rabbitAdmin(connectionFactory: ConnectionFactory): RabbitAdmin {
+        val rabbitAdmin = RabbitAdmin(connectionFactory)
+        rabbitAdmin.declareExchange(exchange())
+        return rabbitAdmin;
+    }
+
+    @Bean
+    fun exchange(): TopicExchange {
+        return TopicExchange("performance-exchange")
     }
 
     companion object {
