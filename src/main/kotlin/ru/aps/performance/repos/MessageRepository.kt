@@ -10,5 +10,6 @@ interface MessageRepository: CrudRepository<Message, Long> {
         value = "SELECT * FROM messages WHERE chat_room_id = :chatRoomId",
         nativeQuery=true
     )
+    fun countByChatRoomId(chatRoomId: UUID): Int
     fun findAllByChatRoomId(chatRoomId: UUID): List<Message>
 }

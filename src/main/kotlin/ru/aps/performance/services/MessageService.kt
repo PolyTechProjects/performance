@@ -19,6 +19,7 @@ class MessageService(
     private val chatRoomService: ChatRoomService,
     private val rabbitTemplate: RabbitTemplate,
     private val exchange: TopicExchange
+    // private val ratingService: RatingService
 ) {
     fun sendMessage(message: Message) {
         try {
@@ -30,12 +31,21 @@ class MessageService(
             logger.error("ERROR: " + e.message)
         }
         messageRepository.save(message)
+        // ratingService.updateUserRatingAfterMessage(message.chatRoomId, message.senderId)
     }
 
     fun getMessageHistory(receiverId: UUID, chatRoomId: UUID): List<Message> {
         if (!chatRoomService.isUserInChatRoom(chatRoomId, receiverId)) {
             throw NoSuchUserInChatRoomException("User ${receiverId} is not allowed to check history in ${chatRoomId}")
         }
+        return messageRepository.findAllByChatRoomId(chatRoomId)
+    }
+
+    fun countMessagesInChatRoom(chatRoomId: UUID): Int {
+        return messageRepository.countByChatRoomId(chatRoomId)
+    }
+
+    fun getMessageHistoryForChatRoom(chatRoomId: UUID): List<Message> {
         return messageRepository.findAllByChatRoomId(chatRoomId)
     }
 
