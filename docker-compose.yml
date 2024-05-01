@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        USER_RATE_KEY: ${USER_RATE_KEY}
     ports:
       - "8080:8080"
     privileged: true
@@ -16,6 +18,8 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
+    environment:
+      - USER_RATE_KEY=${USER_RATE_KEY}
   db:
     image: postgres:latest
     ports:

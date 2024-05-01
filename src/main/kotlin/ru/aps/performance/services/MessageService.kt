@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 import java.lang.StringBuilder
 import java.util.UUID
 
+import ru.aps.performance.services.RatingService
 import ru.aps.performance.models.Message
 import ru.aps.performance.repos.MessageRepository
 import ru.aps.performance.exceptions.NoSuchChatRoomException
@@ -18,8 +19,8 @@ class MessageService(
     private val messageRepository: MessageRepository,
     private val chatRoomService: ChatRoomService,
     private val rabbitTemplate: RabbitTemplate,
-    private val exchange: TopicExchange
-    // private val ratingService: RatingService
+    private val exchange: TopicExchange,
+    private val ratingService: RatingService
 ) {
     fun sendMessage(message: Message) {
         try {
@@ -31,21 +32,13 @@ class MessageService(
             logger.error("ERROR: " + e.message)
         }
         messageRepository.save(message)
-        // ratingService.updateUserRatingAfterMessage(message.chatRoomId, message.senderId)
+        ratingService.updateUserRatingAfterMessage(message.chatRoomId, message.senderId)
     }
 
     fun getMessageHistory(receiverId: UUID, chatRoomId: UUID): List<Message> {
         if (!chatRoomService.isUserInChatRoom(chatRoomId, receiverId)) {
             throw NoSuchUserInChatRoomException("User ${receiverId} is not allowed to check history in ${chatRoomId}")
         }
-        return messageRepository.findAllByChatRoomId(chatRoomId)
-    }
-
-    fun countMessagesInChatRoom(chatRoomId: UUID): Int {
-        return messageRepository.countByChatRoomId(chatRoomId)
-    }
-
-    fun getMessageHistoryForChatRoom(chatRoomId: UUID): List<Message> {
         return messageRepository.findAllByChatRoomId(chatRoomId)
     }
 

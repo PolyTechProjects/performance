@@ -1,10 +1,12 @@
-package ru.aps.performance.repositories
+package ru.aps.performance.repos
 
-import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.repository.CrudRepository
 import ru.aps.performance.models.UserReputation
+import org.springframework.stereotype.Repository
 import java.util.UUID
 import java.util.Optional
 
-interface UserReputationRepository : JpaRepository<UserReputation, UUID> {
+@Repository
+interface UserReputationRepository : CrudRepository<UserReputation, UUID> {
     fun findByUserId(userId: UUID): Optional<UserReputation>
 }

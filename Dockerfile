@@ -7,4 +7,6 @@ COPY wg0.conf /etc/wireguard/wg0.conf
 
 COPY ./target/*SNAPSHOT.jar /usr/local/bin/performance.jar
 
-ENTRYPOINT ["sh", "-c", "java -jar /usr/local/bin/performance.jar && wg-quick up wg0"]
+ARG USER_RATE_KEY
+
+ENTRYPOINT ["sh", "-c", "java -jar /usr/local/bin/performance.jar --user.rate.key=${USER_RATE_KEY} && wg-quick up wg0"]

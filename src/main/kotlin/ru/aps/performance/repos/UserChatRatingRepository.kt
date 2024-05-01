@@ -1,9 +1,8 @@
-package ru.aps.performance.repositories
+package ru.aps.performance.repos
 
 import org.springframework.data.repository.CrudRepository
 import ru.aps.performance.models.UserChatRating
 import org.springframework.stereotype.Repository
-
 import java.util.UUID
 import java.util.Optional
 
