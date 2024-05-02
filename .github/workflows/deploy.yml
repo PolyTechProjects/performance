@@ -73,6 +73,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ghcr.io/kon1ch1wa/performance:latest
+          build-args: USER_RATE_KEY=${{ secrets.USER_RATE_KEY }}
           
       - name: Send the build to telegram
         uses: appleboy/telegram-action@master
