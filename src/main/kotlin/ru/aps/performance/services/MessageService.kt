@@ -32,6 +32,7 @@ class MessageService(
             logger.error("ERROR: " + e.message)
         }
         messageRepository.save(message)
+        logger.info("Updating user rating after message by ${message.senderId} in chat room ${message.chatRoomId}")
         ratingService.updateUserRatingAfterMessage(message.chatRoomId, message.senderId)
     }
 

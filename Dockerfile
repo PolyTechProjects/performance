@@ -9,4 +9,7 @@ COPY ./target/*SNAPSHOT.jar /usr/local/bin/performance.jar
 
 ARG USER_RATE_KEY
 
-ENTRYPOINT ["sh", "-c", "java -jar /usr/local/bin/performance.jar --user.rate.key=${USER_RATE_KEY} && wg-quick up wg0"]
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

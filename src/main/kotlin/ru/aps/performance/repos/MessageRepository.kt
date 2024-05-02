@@ -7,7 +7,7 @@ import java.util.UUID
 
 interface MessageRepository: CrudRepository<Message, Long> {
     @Query(
-        value = "SELECT * FROM messages WHERE chat_room_id = :chatRoomId",
+        value = "SELECT COUNT(m) FROM messages m WHERE m.chat_room_id = :chatRoomId",
         nativeQuery=true
     )
     fun countByChatRoomId(chatRoomId: UUID): Int

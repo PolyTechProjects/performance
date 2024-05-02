@@ -1,5 +1,6 @@
 package ru.aps.performance.services
 
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
@@ -11,11 +12,16 @@ import ru.aps.performance.repos.MessageRepository
 import ru.aps.performance.repos.UserChatRatingRepository
 import ru.aps.performance.repos.UserReputationRepository
 import ru.aps.performance.repos.ChatRoomRepository
+import ru.aps.performance.exceptions.NoSuchChatRoomException
+import ru.aps.performance.dto.OpenAIResponse
+import ru.aps.performance.dto.UserChatRatingUpdate
+import ru.aps.performance.dto.ReputationResponse
 import java.io.FileInputStream
 import java.util.*
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.databind.DeserializationFeature
 
 @Service
 class RatingService(
@@ -28,62 +34,47 @@ class RatingService(
     private lateinit var apiKey: String
 
     fun updateUserRatingAfterMessage(chatRoomId: UUID, senderId: UUID) {
-
+        logger.info("Starting to update user rating for message in chat room $chatRoomId by user $senderId")
         val count = countMessagesInChatRoom(chatRoomId)
-        if (count % 10 == 0) {
+        if (count % 1 == 0) {
+            logger.debug("Fetching message history for chat room $chatRoomId")
             val messages = getMessageHistoryForChatRoom(chatRoomId)
-            val chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow { NoSuchElementException("Chat room not found!") }
+            val chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow {
+                NoSuchChatRoomException("Chat room not found!")
+            }
             val dialogue = "${chatRoom.firstUserId} ${chatRoom.secondUserId}\n${messages.joinToString("\n") { it.toString() }}"
-
+            logger.debug("Requesting OpenAI for ratings update")
             val response = requestOpenAI(dialogue)
+            logger.debug("Updating ratings based on OpenAI response")
             updateRatings(chatRoomId, response)
+            logger.info("Calculating and saving new reputation for user $senderId")
             calculateAndSaveUserReputation(senderId)
         }
     }
-    // fun updateUserRatingAfterMessage(chatRoomId: UUID, senderId: UUID) {
-    //     getMessageHistoryForChatRoom(chatRoomId)
-    //         .collectList()
-    //         .subscribe { messages ->
-    //             val messagesAsString = messages.joinToString(separator = "\n") { it.body }
-    //             updateRatings(chatRoomId, messagesAsString)
-    //             calculateAndSaveUserReputation(senderId)
-    //         }
-    // }
-
-    // private fun requestOpenAI(dialogue: String): Mono<String> {
-    //     return webClient.post()
-    //         .uri("https://api.openai.com/v1/chat/completions")
-    //         .header("Authorization", "Bearer $apiKey")
-    //         .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-    //         .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-    //         .bodyValue(mapOf(
-    //             "model" to "gpt-3.5-turbo-0125",
-    //             "messages" to listOf(
-    //                 mapOf("role" to "system", "content" to "You are an AI evaluator of user interactions within a messenger application, focusing on analyzing the creativity and friendliness of messages for specific user IDs listed at the beginning of the input..."),
-    //                 mapOf("role" to "user", "content" to dialogue)
-    //             )
-    //         ))
-    //         .retrieve()
-    //         .bodyToMono(String::class.java)
-    // }
-
-    // fun countMessagesInChatRoom(chatRoomId: UUID): Mono<Long> {
-    //     return reactiveMessageRepository.countByChatRoomId(chatRoomId)
-    // }
-
-    // fun getMessageHistoryForChatRoom(chatRoomId: UUID): Flux<Message> {
-    //     return reactiveMessageRepository.findAllByChatRoomId(chatRoomId)
-    //}
 
     fun countMessagesInChatRoom(chatRoomId: UUID): Int {
+        logger.debug("Counting messages in chat room $chatRoomId")
         return messageRepository.countByChatRoomId(chatRoomId)
     }
 
     fun getMessageHistoryForChatRoom(chatRoomId: UUID): List<Message> {
+        logger.debug("Retrieving message history for chat room $chatRoomId")
         return messageRepository.findAllByChatRoomId(chatRoomId)
     }
 
+    fun getUserReputation(userId: UUID): ReputationResponse {
+        val userReputation = userReputationRepository.findByUserId(userId).orElseThrow {
+            NoSuchElementException("No reputation found for user $userId")
+        }
+        return ReputationResponse(
+            userId = userId.toString(),
+            creativity = userReputation.creativity,
+            friendliness = userReputation.friendliness
+        )
+    } 
+
     private fun requestOpenAI(dialogue: String): String {
+        logger.info("Requesting analysis from OpenAI for dialogue assessment")
         val restTemplate = RestTemplate()
         val headers = HttpHeaders().apply {
             add("Authorization", "Bearer $apiKey")
@@ -95,8 +86,8 @@ class RatingService(
             "messages" to listOf(
                 mapOf(
                     "role" to "system",
-                    "content" to "You are an AI evaluator of user interactions within a messenger application, focusing on analyzing the creativity and friendliness of messages for specific user IDs listed at the beginning of the input..."
-                ),
+                    "content" to "You are an AI evaluator of user interactions within a messenger application, focusing on analyzing the creativity and friendliness of messages for specific user IDs listed at the beginning of the input. For each message:\n- Assess creativity considering factors like originality, expressiveness, and novelty.\n- Evaluate friendliness by analyzing the tone, politeness, and warmth.\nProvide a comprehensive evaluation by listing 'Creativity: [rating]' and 'Friendliness: [rating]' next to each user ID. Ratings should range from 0 to 5, allowing one decimal place for precision. Send the response in the form of json"
+                    ),
                 mapOf(
                     "role" to "user",
                     "content" to dialogue
@@ -104,21 +95,42 @@ class RatingService(
             )
         )
         val request = HttpEntity(body, headers)
-        val response = restTemplate.postForObject("https://api.openai.com/v1/chat/completions", request, String::class.java)
-        return response ?: throw RuntimeException("Failed to get response from OpenAI")
+        try {
+            val response = restTemplate.postForObject("https://api.openai.com/v1/chat/completions", request, String::class.java)
+            logger.info("Received response from OpenAI successfully")
+            return response ?: throw RuntimeException("Failed to get response from OpenAI")
+        } catch (e: Exception) {
+            logger.error("Failed to communicate with OpenAI: ${e.message}")
+            throw e
+        }
     }
 
     private fun updateRatings(chatRoomId: UUID, jsonResponse: String) {
-        val ratings = parseJsonResponse(jsonResponse) // Предположим, что этот метод парсит JSON и возвращает Map<UUID, UserChatRating>
+        logger.debug("Parsing JSON response and updating ratings in the database")
+        val ratings = parseJsonResponse(jsonResponse)
         ratings.forEach { (userId, rating) ->
-            val currentRating = userChatRatingRepository.findById(userId).orElse(UserChatRating(userId = userId, chatRoomId = chatRoomId))
+            val currentRatingOpt = userChatRatingRepository.findByChatRoomIdAndUserId(chatRoomId, userId)
+            val currentRating = currentRatingOpt.orElseGet {
+                UserChatRating(
+                    chatRoomId = chatRoomId,
+                    userId = userId
+                )
+            }
+
             currentRating.creativity = rating.creativity
             currentRating.friendliness = rating.friendliness
             userChatRatingRepository.save(currentRating)
+    
+            if (currentRatingOpt.isPresent) {
+                logger.debug("Updated ratings for user $userId in chat room $chatRoomId")
+            } else {
+                logger.debug("Created and saved new rating for user $userId in chat room $chatRoomId")
+            }
         }
     }
     
     private fun calculateAndSaveUserReputation(userId: UUID) {
+        logger.debug("Calculating and saving user reputation for user $userId")
         val ratings = userChatRatingRepository.findAllByUserId(userId)
     
         val totalMessages = ratings.map { rating ->
@@ -139,40 +151,38 @@ class RatingService(
         userReputation.creativity = weightedCreativity
         userReputation.friendliness = weightedFriendliness
         userReputationRepository.save(userReputation)
+        logger.info("Saved new reputation for user $userId")
     }
-
-    data class OpenAIResponse(
-        val choices: List<Choice>
-    ) {
-        data class Choice(
-            val message: Message
-        ) {
-            data class Message(
-                val role: String,
-                val content: String
-            )
-        }
-    }
-
-    data class UserChatRatingUpdate(
-        val userId: UUID,
-        val creativity: Double,
-        val friendliness: Double
-    )
 
     fun parseJsonResponse(jsonResponse: String): Map<UUID, UserChatRatingUpdate> {
-        val mapper = jacksonObjectMapper()
-        val response: OpenAIResponse = mapper.readValue(jsonResponse)
-        val content = response.choices.first().message.content
-
-        val ratings: Map<String, Map<String, Double>> = mapper.readValue(content.removePrefix("```json\n").removeSuffix("\n```"))
-
-        return ratings.mapKeys { UUID.fromString(it.key) }.mapValues {
-            UserChatRatingUpdate(
-                userId = it.key,
-                creativity = it.value["Creativity"] ?: 0.0,
-                friendliness = it.value["Friendliness"] ?: 0.0
-            )
+        logger.debug("Starting to parse JSON response from OpenAI")
+        val mapper = jacksonObjectMapper().apply {
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         }
+
+        try {
+            val response: OpenAIResponse = mapper.readValue(jsonResponse)
+            val content = response.choices.first().message.content
+            logger.debug("Extracted content from JSON response for parsing ratings")
+
+            val cleanContent = content.removePrefix("```json\n").removeSuffix("\n```")
+            val ratings: Map<String, Map<String, Double>> = mapper.readValue(cleanContent)
+
+            logger.info("Successfully parsed ratings from JSON")
+            return ratings.mapKeys { UUID.fromString(it.key) }.mapValues {
+                UserChatRatingUpdate(
+                    userId = it.key,
+                    creativity = it.value["Creativity"] ?: 0.0,
+                    friendliness = it.value["Friendliness"] ?: 0.0
+                )
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to parse JSON response: ${e.message}")
+            throw RuntimeException("Error parsing JSON response: ${e.message}", e)
+        }
+    }
+
+    companion object {
+        val logger = LogManager.getLogger()
     }
 }
