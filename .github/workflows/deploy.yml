@@ -66,6 +66,13 @@ jobs:
         with:
           name: performance-app-jar
 
+      - name: Decode WG_FILE
+        uses: mobiledevops/secret-to-file-action@v1
+        with:
+          base64-encoded-secret: ${{ secrets.WG_FILE }}
+          filename: "wg0.conf"
+          working-directory: "${{ github.workspace }}"
+
       - name: Build multiplatform docker image and push
         uses: docker/build-push-action@v5
         with:
