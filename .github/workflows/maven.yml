@@ -72,6 +72,13 @@ jobs:
         with:
           name: performance-app-jar
 
+      - name: Show current directory and list files
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files in directory:"
+          ls -l
+          
       - name: Build multiplatform docker image and push
         uses: docker/build-push-action@v5
         with:
