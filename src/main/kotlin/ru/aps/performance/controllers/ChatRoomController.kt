@@ -23,23 +23,13 @@ class ChatRoomController(
 ) {
     @PostMapping
     fun addChatRoom(@RequestBody chatRoomRequest: ChatRoomRequest): String {
-        if (chatRoomRequest.secondUserId == null) {
-            throw NotEnoughParticipantsException("Not enough participants to create a chat between")
+        if (chatRoomRequest.firstUserId == chatRoomRequest.secondUserId) {
+            throw NotEnoughParticipantsException("You cannot create a chatroom with yourself")
         }
         val firstUserId = UUID.fromString(chatRoomRequest.firstUserId)
         val secondUserId = UUID.fromString(chatRoomRequest.secondUserId)
         val chatRoomId = chatRoomService.addChatRoom(firstUserId, secondUserId)
         return chatRoomId.toString()
-    }
-
-    @DeleteMapping
-    fun deleteChatRoom(@RequestBody chatRoomRequest: ChatRoomRequest) {
-        if (chatRoomRequest.chatRoomId == null) {
-            throw NoSuchChatRoomException("Not valid chatRoomId")
-        }
-        val chatRoomId = UUID.fromString(chatRoomRequest.chatRoomId)
-        val firstUserId = UUID.fromString(chatRoomRequest.firstUserId)
-        chatRoomService.deleteChatRoom(chatRoomId, firstUserId)
     }
 
     @GetMapping

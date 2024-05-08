@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.RequestParam
 import ru.aps.performance.services.UsersService
 import ru.aps.performance.dto.UsersResponse
 import java.util.UUID
@@ -15,8 +16,9 @@ class UsersController(
     private val usersService: UsersService
 ) {
     @GetMapping("/all")
-    fun getAllUsers(): List<UsersResponse> {
-        return usersService.findAllUsers().map { UsersResponse(it.uid.toString(), it.name) }
+    fun getAllUsersExceptMe(@RequestParam userId: String): List<UsersResponse> {
+        val _userId = UUID.fromString(userId)
+        return usersService.findAllUsersExceptMe(_userId).map { UsersResponse(it.uid.toString(), it.name) }
     }
 
     @DeleteMapping("/all")

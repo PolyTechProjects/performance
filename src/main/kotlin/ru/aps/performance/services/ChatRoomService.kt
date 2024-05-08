@@ -22,13 +22,6 @@ class ChatRoomService(
         return chatRoomId
     }
 
-    fun deleteChatRoom(chatRoomId: UUID, userId: UUID) {
-        if (!isUserInChatRoom(chatRoomId, userId)) {
-            throw NoSuchUserInChatRoomException("User ${userId} is not allowed to delete ${chatRoomId} chat room")
-        }
-        chatRoomRepository.deleteById(chatRoomId)
-    }
-
     fun getChatRoom(firstUserId: UUID, secondUserId: UUID): ChatRoom {
         val chatRoom = chatRoomRepository.findChatRoomByUserIds(firstUserId, secondUserId)
         if (chatRoom.isEmpty()) {

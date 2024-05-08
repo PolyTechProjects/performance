@@ -1,10 +1,20 @@
 version: '3'
 
 services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    ports:
+      - "80:80"
   app:
-    image: ghcr.io/kon1ch1wa/performance_${ARCH}:latest
+    image: ghcr.io/kon1ch1wa/performance:latest
     ports:
       - "8080:8080"
+    privileged: true
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv6.conf.all.disable_ipv6=0
     depends_on:
       db:
         condition: service_started

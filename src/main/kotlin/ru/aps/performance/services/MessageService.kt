@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 import java.lang.StringBuilder
 import java.util.UUID
 
+import ru.aps.performance.services.RatingService
 import ru.aps.performance.models.Message
 import ru.aps.performance.repos.MessageRepository
 import ru.aps.performance.exceptions.NoSuchChatRoomException
@@ -18,7 +19,8 @@ class MessageService(
     private val messageRepository: MessageRepository,
     private val chatRoomService: ChatRoomService,
     private val rabbitTemplate: RabbitTemplate,
-    private val exchange: TopicExchange
+    private val exchange: TopicExchange,
+    private val ratingService: RatingService
 ) {
     fun sendMessage(message: Message) {
         try {
@@ -30,6 +32,8 @@ class MessageService(
             logger.error("ERROR: " + e.message)
         }
         messageRepository.save(message)
+        logger.info("Updating user rating after message by ${message.senderId} in chat room ${message.chatRoomId}")
+        ratingService.updateUserRatingAfterMessage(message.chatRoomId, message.senderId)
     }
 
     fun getMessageHistory(receiverId: UUID, chatRoomId: UUID): List<Message> {
