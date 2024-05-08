@@ -42,19 +42,12 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
       - name: Decode WG_FILE
         uses: mobiledevops/secret-to-file-action@v1
         with:
           base64-encoded-secret: ${{ secrets.WG_FILE }}
           filename: "wg0.conf"
           working-directory: "/home/runner/work/performance/performance"
-          run: |
-            echo "Current directory:"
-            pwd
-            echo "Files in directory:"
-            ls -l
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
