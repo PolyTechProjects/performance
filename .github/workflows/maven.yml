@@ -63,26 +63,12 @@ jobs:
         with:
           name: performance-app-jar
 
-      - name: Show current directory and list files
-        run: |
-          echo "Current directory:"
-          pwd
-          echo "Files in directory:"
-          ls -l
-
       - name: Decode WG_FILE
         uses: mobiledevops/secret-to-file-action@v1
         with:
           base64-encoded-secret: ${{ secrets.WG_FILE }}
           filename: "wg0.conf"
           working-directory: "${{ github.workspace }}"
-
-      - name: Show current directory and list files after decode
-        run: |
-          echo "Current directory:"
-          pwd
-          echo "Files in directory:"
-          ls -l
           
       - name: Build multiplatform docker image and push
         uses: docker/build-push-action@v5
