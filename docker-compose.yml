@@ -1,6 +1,12 @@
 version: '3'
 
 services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    ports:
+      - "80:80"
   app:
     image: ghcr.io/kon1ch1wa/performance:latest
     ports:
