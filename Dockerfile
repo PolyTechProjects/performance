@@ -5,7 +5,7 @@ RUN apk update \
 
 COPY wg0.conf /etc/wireguard/wg0.conf
 
-COPY ./target/*SNAPSHOT.jar /usr/local/bin/performance.jar
+COPY *SNAPSHOT.jar /usr/local/bin/performance.jar
 
 ARG USER_RATE_KEY
 ENV USER_RATE_KEY=${USER_RATE_KEY}
