@@ -7,6 +7,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory
 import org.springframework.amqp.core.TopicExchange
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
 import org.apache.logging.log4j.LogManager
 
 @Configuration
@@ -25,6 +26,7 @@ class RabbitMqConfig() {
     @Bean
     fun rabbitTemplate(connectionFactory: ConnectionFactory): RabbitTemplate {
         val rabbitTemplate = RabbitTemplate(connectionFactory)
+        rabbitTemplate.setMessageConverter(converter())
         return rabbitTemplate
     }
 
@@ -38,6 +40,12 @@ class RabbitMqConfig() {
     @Bean
     fun exchange(): TopicExchange {
         return TopicExchange("performance-exchange")
+    }
+
+    @Bean
+    fun converter(): Jackson2JsonMessageConverter {
+        val converter = Jackson2JsonMessageConverter()
+        return converter
     }
 
     companion object {

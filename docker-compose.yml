@@ -8,7 +8,8 @@ services:
     ports:
       - "80:80"
   app:
-    image: ghcr.io/kon1ch1wa/performance:latest
+    build:
+      context: .
     ports:
       - "8080:8080"
     privileged: true
