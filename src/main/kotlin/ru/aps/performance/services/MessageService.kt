@@ -24,7 +24,7 @@ class MessageService(
 ) {
     fun sendMessage(message: Message) {
         try {
-            rabbitTemplate.convertAndSend("${exchange.name}", message.chatRoomId.toString(), message.body)
+            rabbitTemplate.convertAndSend("${exchange.name}", message.chatRoomId.toString(), message)
             if (logger.isTraceEnabled()) {
                 logger.trace("INFO: message ${message.body} sent to /queue/${message.chatRoomId}")
             }
