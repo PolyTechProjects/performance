@@ -77,9 +77,19 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ghcr.io/kon1ch1wa/performance:latest
+          build-args: USER_RATE_KEY=${{ secrets.USER_RATE_KEY }}
+      
+      - name: Build RaspberryPi docker image and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./raspberry_app.Dockerfile
+          platforms: linux/arm/v7
+          push: true
+          tags: ghcr.io/kon1ch1wa/performance:rpi
           build-args: USER_RATE_KEY=${{ secrets.USER_RATE_KEY }}
           
       - name: Send the build to telegram
