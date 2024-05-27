@@ -8,6 +8,7 @@ import ru.aps.performance.exceptions.NoSuchChatRoomException
 import ru.aps.performance.exceptions.NoSuchUserInChatRoomException
 import ru.aps.performance.exceptions.NotEnoughParticipantsException
 import ru.aps.performance.exceptions.DuplicateChatRoomException
+import ru.aps.performance.exceptions.DuplicateUserException
 
 @ControllerAdvice
 class BaseController() {
@@ -28,6 +29,11 @@ class BaseController() {
 
     @ExceptionHandler(DuplicateChatRoomException::class)
     fun duplicateChatRoomExceptionHandler(ex: DuplicateChatRoomException): ResponseEntity<String> {
+        return ResponseEntity(ex.message, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(DuplicateUserException::class)
+    fun duplicateUserExceptionHandler(ex: DuplicateUserException): ResponseEntity<String> {
         return ResponseEntity(ex.message, HttpStatus.BAD_REQUEST)
     }
 }
