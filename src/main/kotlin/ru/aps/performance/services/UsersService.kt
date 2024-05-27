@@ -15,8 +15,8 @@ class UsersService(
         return userRepository.findAll().toList().filter { it.uid != userId }
     }
 
-    fun findUserByCredentials(name: String, password: String): Optional<User> {
-        return userRepository.findUserByNameAndPassword(name, password)
+    fun findUserByName(name: String): Optional<User> {
+        return userRepository.findUserByName(name)
     }
 
     fun purgeAllUsers() {

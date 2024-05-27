@@ -11,8 +11,8 @@ import java.util.UUID
 interface UserRepository: CrudRepository<User, UUID> {
 
     @Query(
-        value = "SELECT * FROM users WHERE name = :name AND password = :password",
+        value = "SELECT * FROM users WHERE name = :name",
         nativeQuery=true
     )
-    fun findUserByNameAndPassword(name: String, password: String): Optional<User>
+    fun findUserByName(name: String): Optional<User>
 }
