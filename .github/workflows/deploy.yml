@@ -89,7 +89,7 @@ jobs:
           file: ./raspberry_app.Dockerfile
           platforms: linux/arm/v7
           push: true
-          tags: ghcr.io/kon1ch1wa/performance:rpi
+          tags: ghcr.io/kon1ch1wa/performance_rpi:latest
           build-args: USER_RATE_KEY=${{ secrets.USER_RATE_KEY }}
           
       - name: Send the build to telegram
@@ -97,4 +97,4 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_RELEASES_CHANNEL }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: ГОООООООООЛ! (ghcr.io/kon1ch1wa/performance:latest) 
+          message: ГОООООООООЛ! (ghcr.io/kon1ch1wa/performance:latest)
